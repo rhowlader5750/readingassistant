@@ -42,7 +42,7 @@ document.addEventListener('mouseup', () => {
     document.body.appendChild(bubble);
 
     bubble.addEventListener('click', () => {
-      // Load React app when clicked
+      
       if (!document.getElementById('react-sidebar-root')) {
         const root = document.createElement('div');
         root.id = 'react-sidebar-root';
