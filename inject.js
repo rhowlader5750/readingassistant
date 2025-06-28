@@ -1,3 +1,4 @@
+console.log("🔍 inject.js is running!");
 
 if (!document.getElementById('reading-helper-style')) {
   const style = document.createElement('style');
@@ -19,11 +20,73 @@ if (!document.getElementById('reading-helper-style')) {
   document.head.appendChild(style);
 }
 
+// ✅ IMMEDIATELY RUN PARSER
+(function parseImmediatelyOrOnLoad() {
+  const runParser = () => {
+    console.log("🟢 DOM ready — parsing structured content");
+
+    const structuredSections = [];
+    let currentSection = null;
+
+    document.querySelectorAll("h1, h2, h3, h4, h5, h6, p").forEach((el) => {
+      const tag = el.tagName.toLowerCase();
+      const text = el.innerText.trim();
+
+      if (!text) return;
+
+      if (tag.startsWith("h")) {
+        currentSection = {
+          heading: text,
+          tag,
+          content: []
+        };
+        structuredSections.push(currentSection);
+      } else if (tag === "p" && currentSection) {
+        currentSection.content.push(text);
+      }
+    });
+
+    console.log("📚 Structured page content:", structuredSections);
+    window.__READING_HELPER_CONTENT__ = structuredSections;
+  };
+
+  const observer = new MutationObserver((mutationsList, observer) => {
+  for (const mutation of mutationsList) {
+    if (mutation.addedNodes.length > 0) {
+      // Optionally, throttle how often you parse to avoid too many updates
+      console.log("📈 DOM changed — re-parsing...");
+      runParser();
+      break; // you can break early if one mutation is enough
+    }
+  }
+});
+
+// Start observing the body for DOM changes
+observer.observe(document.body, {
+  childList: true,
+  subtree: true
+});
+
+
+ if (
+  document.readyState === "complete" ||
+  document.readyState === "interactive"
+) {
+  setTimeout(runParser, 1500); // wait 1.5 seconds before running
+} else {
+  window.addEventListener("DOMContentLoaded", () => {
+    setTimeout(runParser, 1500); // wait after DOM is ready
+  });
+}
+
+})();
+
+
+// 🖱️ MOUSEUP LISTENER FOR SUMMARIZE BUBBLE
 document.addEventListener('mouseup', () => {
   const selection = window.getSelection();
   const text = selection.toString().trim();
 
-  // Remove old bubble
   const old = document.getElementById('reading-helper-bubble');
   if (old) old.remove();
 
@@ -42,7 +105,6 @@ document.addEventListener('mouseup', () => {
     document.body.appendChild(bubble);
 
     bubble.addEventListener('click', () => {
-      
       if (!document.getElementById('react-sidebar-root')) {
         const root = document.createElement('div');
         root.id = 'react-sidebar-root';
@@ -54,7 +116,7 @@ document.addEventListener('mouseup', () => {
         document.body.appendChild(script);
       }
 
-      bubble.remove(); 
+      bubble.remove();
     });
   }
 });

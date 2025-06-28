@@ -4,14 +4,12 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   build: {
-    outDir: 'dist',
-    emptyOutDir: true,
     rollupOptions: {
       input: {
-        sidebar: 'src/main.jsx'
+        sidebar: 'src/sidebar.jsx'
       },
       output: {
-        entryFileNames: 'sidebar.js'
+        entryFileNames: 'sidebar.js' 
       }
     }
   }
