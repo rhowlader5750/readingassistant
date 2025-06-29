@@ -1,3 +1,6 @@
+
+
+
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 
@@ -5,7 +8,7 @@ const Sidebar = () => {
   const [sections, setSections] = useState([]);
 
   useEffect(() => {
-    // Safely access parsed data
+    console.log("✅ Sidebar component mounted!");
     if (window.__READING_HELPER_CONTENT__) {
       setSections(window.__READING_HELPER_CONTENT__);
     }

@@ -6,10 +6,10 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        sidebar: 'src/sidebar.jsx'
+        sidebar: 'src/sidebar.jsx', // <- or .tsx
       },
       output: {
-        entryFileNames: 'sidebar.js' 
+        entryFileNames: 'sidebar.js'
       }
     }
   }

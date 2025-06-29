@@ -1,5 +1,6 @@
 console.log("🔍 inject.js is running!");
 
+// Inject styles (only once)
 if (!document.getElementById('reading-helper-style')) {
   const style = document.createElement('style');
   style.id = 'reading-helper-style';
@@ -20,7 +21,7 @@ if (!document.getElementById('reading-helper-style')) {
   document.head.appendChild(style);
 }
 
-// ✅ IMMEDIATELY RUN PARSER
+// 🔄 Structured parsing on load + DOM changes
 (function parseImmediatelyOrOnLoad() {
   const runParser = () => {
     console.log("🟢 DOM ready — parsing structured content");
@@ -50,45 +51,46 @@ if (!document.getElementById('reading-helper-style')) {
     window.__READING_HELPER_CONTENT__ = structuredSections;
   };
 
-  const observer = new MutationObserver((mutationsList, observer) => {
-  for (const mutation of mutationsList) {
-    if (mutation.addedNodes.length > 0) {
-      // Optionally, throttle how often you parse to avoid too many updates
-      console.log("📈 DOM changed — re-parsing...");
-      runParser();
-      break; // you can break early if one mutation is enough
+  // Observe dynamic DOM changes (e.g., lazy loading)
+  const observer = new MutationObserver((mutationsList) => {
+    for (const mutation of mutationsList) {
+      if (mutation.addedNodes.length > 0) {
+        console.log("📈 DOM changed — re-parsing...");
+        runParser();
+        break;
+      }
     }
-  }
-});
-
-// Start observing the body for DOM changes
-observer.observe(document.body, {
-  childList: true,
-  subtree: true
-});
-
-
- if (
-  document.readyState === "complete" ||
-  document.readyState === "interactive"
-) {
-  setTimeout(runParser, 1500); // wait 1.5 seconds before running
-} else {
-  window.addEventListener("DOMContentLoaded", () => {
-    setTimeout(runParser, 1500); // wait after DOM is ready
   });
-}
 
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+
+  // Initial run
+  if (
+    document.readyState === "complete" ||
+    document.readyState === "interactive"
+  ) {
+    setTimeout(runParser, 1500);
+  } else {
+    window.addEventListener("DOMContentLoaded", () => {
+      setTimeout(runParser, 1500);
+    });
+  }
 })();
 
-
-// 🖱️ MOUSEUP LISTENER FOR SUMMARIZE BUBBLE
+// 🖱️ Add bubble on text selection
 document.addEventListener('mouseup', () => {
   const selection = window.getSelection();
   const text = selection.toString().trim();
 
-  const old = document.getElementById('reading-helper-bubble');
-  if (old) old.remove();
+  // Clean old bubble
+  const existingBubble = document.getElementById('reading-helper-bubble');
+  if (existingBubble) {
+    console.log("🧼 Removing old bubble");
+    existingBubble.remove();
+  }
 
   if (text.length > 0) {
     const range = selection.getRangeAt(0);
@@ -104,19 +106,39 @@ document.addEventListener('mouseup', () => {
 
     document.body.appendChild(bubble);
 
-    bubble.addEventListener('click', () => {
+    console.log("💬 Bubble created and added to page!");
+
+    // Use mousedown instead of click to avoid timing conflicts
+    bubble.addEventListener('mousedown', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      console.log("🟡 Bubble clicked!");
+
+      // Prevent duplicate sidebar
       if (!document.getElementById('react-sidebar-root')) {
         const root = document.createElement('div');
         root.id = 'react-sidebar-root';
+        root.style.position = 'fixed';
+        root.style.top = '0';
+        root.style.right = '0';
+        root.style.width = '360px';
+        root.style.height = '100vh';
+        root.style.zIndex = '999999999';
+        root.style.backgroundColor = '#eee'; // debug color
         document.body.appendChild(root);
 
         const script = document.createElement('script');
         script.src = chrome.runtime.getURL('dist/sidebar.js');
         script.type = 'module';
         document.body.appendChild(script);
+
+        console.log("📦 Sidebar injected!");
+      } else {
+        console.log("⚠️ Sidebar already exists.");
       }
 
       bubble.remove();
     });
   }
 });
+
