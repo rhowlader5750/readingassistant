@@ -116,21 +116,25 @@ document.addEventListener('mouseup', () => {
 
       // Prevent duplicate sidebar
       if (!document.getElementById('react-sidebar-root')) {
-        const root = document.createElement('div');
-        root.id = 'react-sidebar-root';
-        root.style.position = 'fixed';
-        root.style.top = '0';
-        root.style.right = '0';
-        root.style.width = '360px';
-        root.style.height = '100vh';
-        root.style.zIndex = '999999999';
-        root.style.backgroundColor = '#eee'; // debug color
-        document.body.appendChild(root);
+  const root = document.createElement('div');
+  root.id = 'react-sidebar-root';
+  root.style.position = 'fixed';
+  root.style.top = '0';
+  root.style.right = '0';
+  root.style.width = '360px';
+  root.style.height = '100vh';
+  root.style.zIndex = '999999999';
+  root.style.backgroundColor = '#fff'; // make sure it's visible
+  document.body.appendChild(root);
 
-        const script = document.createElement('script');
-        script.src = chrome.runtime.getURL('dist/sidebar.js');
-        script.type = 'module';
-        document.body.appendChild(script);
+  const script = document.createElement('script');
+  script.src = chrome.runtime.getURL('dist/sidebar.js');
+  script.type = 'module';
+  script.onload = () => console.log("✅ sidebar.js loaded and executed!");
+  script.onerror = () => console.error("❌ Failed to load sidebar.js");
+  document.body.appendChild(script);
+
+
 
         console.log("📦 Sidebar injected!");
       } else {
@@ -141,4 +145,3 @@ document.addEventListener('mouseup', () => {
     });
   }
 });
-
