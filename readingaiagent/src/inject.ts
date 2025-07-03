@@ -14,17 +14,17 @@ function getVisibleText(root: Element): string {
           return NodeFilter.FILTER_REJECT;
         }
 
-        // Check if the text node is inside any skip element
+    
         let currentElement: HTMLElement | null = parent;
         while (currentElement) {
           const tagName = currentElement.tagName?.toLowerCase();
           
-          // Skip style, script, and other non-content tags
+          
           if (['style', 'script', 'noscript', 'svg', 'canvas'].includes(tagName)) {
             return NodeFilter.FILTER_REJECT;
           }
           
-          // Skip elements with specific classes/attributes that indicate non-content
+          
           const classList = currentElement.className || '';
           const skipPatterns = [
             'nav', 'menu', 'header', 'footer', 'sidebar', 'aside',
@@ -40,14 +40,14 @@ function getVisibleText(root: Element): string {
           currentElement = currentElement.parentElement;
         }
 
-        // Skip text that looks like CSS (but be more specific)
+        
         const textContent = node.textContent || '';
         const cssPattern = /^[\s\S]*{[\s\S]*:[^}]*}[\s\S]*$/;
         if (cssPattern.test(textContent.trim()) && textContent.length > 50) {
           return NodeFilter.FILTER_REJECT;
         }
 
-        // Skip hidden elements
+        
         const computedStyle = window.getComputedStyle(parent);
         if (computedStyle.display === 'none' || computedStyle.visibility === 'hidden') {
           return NodeFilter.FILTER_REJECT;
@@ -108,7 +108,7 @@ function getWikipediaContent(): string {
 }
 
 function getRedditContent(): string {
-  // Reddit post content
+  
   const postContent = document.querySelector('[data-testid="post-content"]') ||
                      document.querySelector('.Post') ||
                      document.querySelector('[data-click-id="text"]');
@@ -134,7 +134,7 @@ function getMediumContent(): string {
 }
 
 function getGithubContent(): string {
-  // GitHub README or file content
+  
   const readmeContent = document.querySelector('#readme') ||
                        document.querySelector('.markdown-body') ||
                        document.querySelector('[data-testid="readme"]');
@@ -217,7 +217,7 @@ function getGenericContent(): string {
     }
   ];
   
-  // Try each strategy until we get good content
+  
   for (const strategy of strategies) {
     const result = strategy();
     if (result && result.length > 100) {
