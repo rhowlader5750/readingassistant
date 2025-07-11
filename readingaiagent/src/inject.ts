@@ -238,3 +238,10 @@ function getGenericContent(): string {
   // Store globally for access later (e.g., popup)
   (window as any).__PAGE_TEXT__ = allText;
 })();
+
+chrome.runtime.onMessage.addListener((req, _sender, sendResponse) => {
+  if (req.type === 'GET_PAGE_TEXT') {
+    const text = (window as any).__PAGE_TEXT__;
+    sendResponse({ text });
+  }
+});
