@@ -17,6 +17,6 @@ export async function generateTTS(summaryText, outputFile = 'summary.mp3') {
   await fs.mkdir('output', { recursive: true });
   await fs.writeFile(filePath, response.audioContent, 'binary');
 
-  console.log(`✅ Audio saved to ${filePath}`);
+  console.log(`Audio saved to ${filePath}`);
   return filePath;
 }
